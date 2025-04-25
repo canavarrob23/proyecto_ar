@@ -18,10 +18,16 @@
             <!-- <ul class="nav nav-tabs"> -->
             <ul class="nav">
                 <li>
+                    <!-- *** url_for *** solo se usan con los metodos es decir (def), 
+                         Y NO con los decoradores 
+                     -->
                     <a class="btn btn-primary" href="{{ url_for('home') }}">Inicio</a>
                 </li>
                 <li>
                     <a class="btn btn-primary" href="{{ url_for('crud_producto') }}">Mant Productos</a>
+                </li>
+                <li>
+                    <a class="btn btn-primary" href="{{ url_for('producto') }}">Crear Prod</a>
                 </li>
                 <li>
                     <a class="btn btn-primary" href="{{ url_for('editar') }}">Editar</a>

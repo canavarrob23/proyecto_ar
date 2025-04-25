@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
 import crud_prod
+from forms import frm_producto
+# from flask_wtf.csrf import CSRFProtect
 
 # inicializa aplicacion
 app = Flask(__name__)
@@ -60,6 +62,58 @@ def crud_producto():
             # return datos
 
 
+@app.route('/producto', methods=["GET", "POST"])
+def producto():
+    modo = request.args.get('modo',None)
+    id = request.args.get('id',None)
+    form = frm_producto()
+    #datos = crud_prod.get_productos()
+    accion = request.form.get('accion',None)
+    print(request.method)
+    print('HOLA PRODUCTO')
+
+    if id and id != None:
+        dato  = crud_prod.sel_producto(id)
+
+    if request.method == "GET": 
+        try:
+            # aca se valida la exixtencia de la variable dato
+            # esta es la manera correcta de validar la existencia de una variable en python
+            dato
+            data_existe = True
+        except:
+            data_existe = False
+
+        if data_existe and dato != None:
+            return render_template('producto.html', form=form, prod=dato, modo=modo)
+        else:
+            return render_template('producto.html', form=form, modo=modo)
+
+    elif request.method == "POST":
+        if form.validate_on_submit() and accion == 'ins':
+            print('INSERT')
+            datos = request.form
+            print(datos)
+            crud_prod.insert_producto(datos) 
+            flash('Registro Creado ...!')
+            return redirect(url_for('lista_prod'))
+
+        elif form.validate_on_submit() and accion=='act':
+            print('UPDATE')
+            datos = request.form
+            print(datos)
+            crud_prod.update_producto(request.form) 
+            flash('Registro Actualizado ...!')
+            return redirect(url_for('lista_prod'))
+
+        else:
+            flash(form.errors)
+            #print(form.errors)
+            #return render_template('producto.html', form=form, prod=dato)
+            return 'HOLA es el POST del formulario' 
+    #         # return render_template('producto.html', form=form, prod=dato)
+        
+
 @app.route('/eliminar/<string:id>')
 def eliminar(id):
     # return 'HOLA ELIMINAR'
@@ -70,8 +124,7 @@ def eliminar(id):
 
 @app.route('/editar')
 def editar():
-    return 'HOLA EDITAR'
-    #return render_template('editar.html')
+    return render_template('editar.html')
 
 @app.route('/servicios')
 def servicios():
@@ -85,8 +138,15 @@ def contacto():
 
 @app.route('/lista_producto')
 def lista_prod():
-    return 'HOLA lista_productos'
-    #return render_template('lista_productos.html')
+    #return 'HOLA lista_productos'
+        datos = crud_prod.get_productos()
+        if datos and datos != None:
+            return render_template('listado_productos.html', productos=datos)
+        else:
+            flash('No hay productos REGISTRADOS ...!')
+            return redirect(url_for('home'))
+            #return render_template('listado_productos.html', productos=datos)
+            #return render_template('listado_productos.html', productos=crud_prod.get_productos())
 
 if __name__ == "__main__":
     app.run(debug=True)

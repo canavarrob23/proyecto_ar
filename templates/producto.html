@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block pestana %} Crear 02 {% endblock %}
+
+{% block titulo %}
+<h3> {{ 'Crear ' if not modo else 'Editar '}}  Producto (objeto)</h3>
+{% endblock%}
+
+<!-- ESTRUCTURA PARA LOS MENSAJES -->
+<!--
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        Mensaje de prueba
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+-->
+
+{% block contenido %}
+    {% with mensajes = get_flashed_messages() %}
+    <!-- si existe la var mensaje -->
+    {% if mensajes %} 
+        {% for mensaje in mensajes %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ mensaje }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form id="producto" action="{{ url_for('producto') }}" method="POST"> 
+        
+        <input type="hidden" name="id" class="form-control" id="id" value="{{ prod[0] if prod else '' }} ">
+        <div class="row mb-2">
+            {{ form.codiprod.label(class_="col-sm-3 col-form-label") }}
+            <div class="col-sm-8">
+                {{ form.codiprod(class_="form-control", value=prod[1] if prod else '') }} 
+            </div>
+        </div>
+        <div class="row mb-2">
+            {{ form.descprod.label(class_="col-sm-3 col-form-label") }}
+            <div class="col-sm-8">
+                {{ form.descprod(class_="form-control", value=prod[2] if prod else '') }} 
+            </div>
+        </div>
+        <div class="row mb-2">
+            {{ form.precprod.label(class_="col-sm-3 col-form-label") }}
+            <div class="col-sm-8">
+                {{ form.precprod(class_="form-control", value=prod[3] if prod else '') }} 
+            </div>
+        </div>
+        <div class="row mb-2">
+            {{ form.cantstoc.label(class_="col-sm-3 col-form-label") }}
+            <div class="col-sm-8">
+                {{ form.cantstoc(class_="form-control", id="codiprod", value=prod[4] if prod else '') }} 
+            </div>
+        </div>
+        <!-- VALICAIONES DE TIPO CSRF Cross-side para evitar ataques -->
+        {{ form.hidden_tag() }}
+        <div class="col-auto">
+            {% if not modo %}
+                <button id="btn_crear" name="accion" value="ins" type="submit" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-2"></i>Crear Producto</button>
+            {% else %}
+                <button id="btn_modif" name="accion" value="act" type="submit" class="btn btn-success btn-sm" > <i class="bi bi-floppy"></i> Aplicar </button>
+                <button id="btn_elimi" name="accion" value="eli" type="submit" class="btn btn-danger  btn-sm btn-delete" > <i class="bi bi-trash me-2"></i> Eliminar</button>
+                <a class="btn btn-primary btn-sm" href="{{ url_for('producto') }}"><i class="bi bi-escape"></i>Cancelar</a>
+            {% endif %}
+
+            {% with mensajes = get_flashed_messages() %}
+            <!--
+                esto es un bloque de mensajes que se puede usar en cualquier parte de la plantilla     
+                si existe la var mensaje 
+            -->
+            {% if mensajes %} 
+                {% for mensaje in mensajes %}
+                    <div class="alert alert-success alert-dismissible fade show col-sm-3" role="alert">
+                        {{ mensaje }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+                
+        </div>
+    </form>
+
+{% endblock %}
