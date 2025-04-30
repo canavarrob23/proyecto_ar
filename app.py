@@ -23,32 +23,54 @@ def crud_producto():
     id = request.args.get('id',None)
     print('modo:', modo)
     print('accion:', accion)
+    print('request.method ',request.method)
 
-    if request.method == "GET": 
+    if request.method == "GET":
         datos = crud_prod.get_productos()
         if id and id != None:
             dato  = crud_prod.sel_producto(id)
             print('dato:', dato)
             return render_template('crud_producto.html', productos=datos, prod=dato, modo=modo)
         else:
-            return render_template('crud_producto.html', productos=datos, modo=modo)        
+            return render_template('crud_producto.html', productos=datos, modo=modo)
 
-    elif request.method == "POST": 
+    elif request.method == "POST":
 
         if accion=='ins':
             print('INSERT')
             datos = request.form
             print(datos)
-            #crud_prod.insert_producto(request.form) 
-            crud_prod.insert_producto(datos) 
-            flash('Registro Creado ...!')
-            return redirect(url_for('crud_producto'))
-            # return datos
+            codiprod = datos["codiprod"]
+            print(codiprod)
+            prod  = crud_prod.get_producto(codiprod)
+            print('prod ', prod)
+
+            '''
+            try:
+                codiprod
+                exist_prod = True
+            except:
+                exist_prod = False
+            '''
+
+            if codiprod and codiprod != None:
+                prod  = crud_prod.get_producto(codiprod)
+
+            if prod and prod != None:
+                print('El producto ya existe')
+                flash(f'El codigo de producto: ({codiprod}) ya esta REGISTRADO ...!')
+                return redirect(url_for('crud_producto'))
+            else:
+                print(codiprod)
+                crud_prod.insert_producto(datos)
+                flash('Registro Creado ...!')
+                return redirect(url_for('crud_producto'))
+
         elif accion=='act':
             print('UPDATE')
             datos = request.form
             print(datos)
-            crud_prod.update_producto(request.form) 
+            crud_prod.update_producto(request.form)
             flash('Registro Actualizado ...!')
             return redirect(url_for('crud_producto'))
             # return datos
@@ -56,7 +78,7 @@ def crud_producto():
             print('DELETE')
             datos = request.form
             print(datos)
-            crud_prod.delete_producto(request.form) 
+            crud_prod.delete_producto(request.form)
             flash('Registro Eliminado ...!')
             return redirect(url_for('crud_producto'))
             # return datos
@@ -75,9 +97,9 @@ def producto():
     if id and id != None:
         dato  = crud_prod.sel_producto(id)
 
-    if request.method == "GET": 
+    if request.method == "GET":
         try:
-            # aca se valida la exixtencia de la variable dato
+            # aca se valida la existencia de la variable dato
             # esta es la manera correcta de validar la existencia de una variable en python
             dato
             data_existe = True
@@ -94,7 +116,7 @@ def producto():
             print('INSERT')
             datos = request.form
             print(datos)
-            crud_prod.insert_producto(datos) 
+            crud_prod.insert_producto(datos)
             flash('Registro Creado ...!')
             return redirect(url_for('lista_prod'))
 
@@ -102,7 +124,7 @@ def producto():
             print('UPDATE')
             datos = request.form
             print(datos)
-            crud_prod.update_producto(request.form) 
+            crud_prod.update_producto(request.form)
             flash('Registro Actualizado ...!')
             return redirect(url_for('lista_prod'))
 
@@ -110,9 +132,9 @@ def producto():
             flash(form.errors)
             #print(form.errors)
             #return render_template('producto.html', form=form, prod=dato)
-            return 'HOLA es el POST del formulario' 
+            return 'HOLA es el POST del formulario'
     #         # return render_template('producto.html', form=form, prod=dato)
-        
+
 
 @app.route('/eliminar/<string:id>')
 def eliminar(id):

@@ -1,0 +1,5 @@
+.table-responsive {
+    max-height: 100px; /* Define la altura máxima deseada */
+    overflow-y: auto; /* Activa el scroll vertical cuando sea necesario */
+    display: inline-block; /* Permite que el contenedor se ajuste al contenido */
+}
